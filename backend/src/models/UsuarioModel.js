@@ -4,7 +4,10 @@ const crypto = require('crypto');
 
 class UsuarioModel {
   constructor() {
-    this.dataPath = path.join(__dirname, '../data/usuarios.json');
+    // Usar /app/data en Railway (con Volume), o ./src/data en desarrollo
+    const dataDir = process.env.DATA_DIR || path.join(__dirname, '../data');
+    this.dataPath = path.join(dataDir, 'usuarios.json');
+    console.log('📁 UsuarioModel - Ruta de datos:', this.dataPath);
   }
 
   async getAll() {

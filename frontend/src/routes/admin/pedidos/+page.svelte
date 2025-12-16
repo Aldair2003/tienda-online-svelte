@@ -4,7 +4,6 @@
   import { ApiService } from '$lib/services/api';
   import { notificaciones } from '$lib/stores/notificaciones';
   import Navbar from '$lib/components/Navbar.svelte';
-  import Notificaciones from '$lib/components/Notificaciones.svelte';
   import { 
     ClipboardList, 
     Clock, 
@@ -131,7 +130,6 @@
 </svelte:head>
 
 <Navbar />
-<Notificaciones />
 
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Header -->

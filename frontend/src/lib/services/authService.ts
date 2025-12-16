@@ -1,7 +1,8 @@
 import type { ApiResponse } from '$lib/types';
 import type { Usuario } from '$lib/stores/auth';
 
-const API_URL = 'http://localhost:3000/api';
+// Usa variable de entorno si existe, sino usa localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export interface RegistroData {
   nombre: string;
@@ -17,39 +18,55 @@ export interface LoginData {
 
 export class AuthService {
   static async registro(data: RegistroData): Promise<Usuario> {
-    const response = await fetch(`${API_URL}/auth/registro`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    
-    const result: ApiResponse<Usuario> = await response.json();
-    
-    if (!result.success) {
-      throw new Error(result.message || 'Error en el registro');
+    try {
+      const response = await fetch(`${API_URL}/auth/registro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const result: ApiResponse<Usuario> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error en el registro');
+      }
+      
+      return result.data!;
+    } catch (error: any) {
+      // Si es un error de red o el servidor no responde
+      if (error.message === 'Failed to fetch') {
+        throw new Error('No se pudo conectar con el servidor');
+      }
+      throw error;
     }
-    
-    return result.data!;
   }
 
   static async login(data: LoginData): Promise<Usuario> {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    
-    const result: ApiResponse<Usuario> = await response.json();
-    
-    if (!result.success) {
-      throw new Error(result.message || 'Credenciales inválidas');
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const result: ApiResponse<Usuario> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Credenciales inválidas');
+      }
+      
+      return result.data!;
+    } catch (error: any) {
+      // Si es un error de red o el servidor no responde
+      if (error.message === 'Failed to fetch') {
+        throw new Error('No se pudo conectar con el servidor');
+      }
+      throw error;
     }
-    
-    return result.data!;
   }
 
   static async obtenerPerfil(userId: string): Promise<Usuario> {

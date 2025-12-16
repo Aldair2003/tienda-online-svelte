@@ -3,7 +3,10 @@ const path = require('path');
 
 class PedidoModel {
   constructor() {
-    this.dataPath = path.join(__dirname, '../data/pedidos.json');
+    // Usar /app/data en Railway (con Volume), o ./src/data en desarrollo
+    const dataDir = process.env.DATA_DIR || path.join(__dirname, '../data');
+    this.dataPath = path.join(dataDir, 'pedidos.json');
+    console.log('📁 PedidoModel - Ruta de datos:', this.dataPath);
   }
 
   async getAll() {

@@ -24,8 +24,17 @@
   };
 
   async function handleLogin() {
+    // Limpiar notificaciones anteriores
+    notificaciones.limpiar();
+
+    // Validaciones
     if (!loginForm.email || !loginForm.password) {
-      notificaciones.agregar('error', 'Todos los campos son obligatorios');
+      notificaciones.agregar('error', 'Por favor completa todos los campos');
+      return;
+    }
+
+    if (!loginForm.email.includes('@')) {
+      notificaciones.agregar('error', 'Ingresa un correo electrónico válido');
       return;
     }
 
@@ -40,12 +49,15 @@
       notificaciones.agregar('success', `¡Bienvenido${usuario.rol === 'cliente' ? '' : ' vendedor'}, ${usuario.nombre}!`);
       
       // Redirigir según el rol
-      if (usuario.rol === 'vendedor') {
-        goto('/admin');
-      } else {
-        goto('/');
-      }
+      setTimeout(() => {
+        if (usuario.rol === 'vendedor') {
+          goto('/admin');
+        } else {
+          goto('/');
+        }
+      }, 500);
     } catch (error: any) {
+      console.error('Error en login:', error);
       notificaciones.agregar('error', error.message || 'Error al iniciar sesión');
     } finally {
       cargando = false;
@@ -53,18 +65,27 @@
   }
 
   async function handleRegistro() {
+    // Limpiar notificaciones anteriores
+    notificaciones.limpiar();
+
+    // Validaciones
     if (!registroForm.nombre || !registroForm.email || !registroForm.password || !registroForm.confirmarPassword) {
-      notificaciones.agregar('error', 'Todos los campos son obligatorios');
+      notificaciones.agregar('error', 'Por favor completa todos los campos');
       return;
     }
 
-    if (registroForm.password !== registroForm.confirmarPassword) {
-      notificaciones.agregar('error', 'Las contraseñas no coinciden');
+    if (!registroForm.email.includes('@')) {
+      notificaciones.agregar('error', 'Ingresa un correo electrónico válido');
       return;
     }
 
     if (registroForm.password.length < 6) {
       notificaciones.agregar('error', 'La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    if (registroForm.password !== registroForm.confirmarPassword) {
+      notificaciones.agregar('error', 'Las contraseñas no coinciden');
       return;
     }
 
@@ -79,15 +100,18 @@
 
       // Iniciar sesión automáticamente después del registro
       auth.login(usuario);
-      notificaciones.agregar('success', '¡Registro exitoso! Bienvenido');
+      notificaciones.agregar('success', `¡Bienvenido ${usuario.nombre}! Tu cuenta ha sido creada`);
       
       // Redirigir según el rol
-      if (usuario.rol === 'vendedor') {
-        goto('/admin');
-      } else {
-        goto('/');
-      }
+      setTimeout(() => {
+        if (usuario.rol === 'vendedor') {
+          goto('/admin');
+        } else {
+          goto('/');
+        }
+      }, 500);
     } catch (error: any) {
+      console.error('Error en registro:', error);
       notificaciones.agregar('error', error.message || 'Error en el registro');
     } finally {
       cargando = false;
@@ -104,31 +128,41 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
+  <div class="w-full max-w-md animate-fade-in">
     <!-- Logo/Header -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-        <Store class="w-8 h-8 text-white" />
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-purple-600 rounded-2xl shadow-lg mb-4 transform hover:scale-110 transition-transform">
+        <Store class="w-10 h-10 text-white" />
       </div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Mi Tienda</h1>
-      <p class="text-gray-600">Tu marketplace favorito</p>
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2">Mi Tienda</h1>
+      <p class="text-gray-600 text-lg">Tu marketplace favorito</p>
     </div>
 
     <!-- Card Principal -->
-    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
       <!-- Tabs -->
-      <div class="flex border-b border-gray-200">
+      <div class="flex border-b border-gray-100 bg-gray-50/50">
         <button
           on:click={() => cambiarModo('login')}
-          class="flex-1 py-4 font-semibold transition-all {modo === 'login' ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-gray-700'}"
+          class="flex-1 py-4 px-4 font-bold text-base transition-all relative {modo === 'login' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'}"
         >
-          Iniciar Sesión
+          {#if modo === 'login'}
+            <span class="relative z-10">Iniciar Sesión</span>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-purple-600 rounded-t-lg"></div>
+          {:else}
+            Iniciar Sesión
+          {/if}
         </button>
         <button
           on:click={() => cambiarModo('registro')}
-          class="flex-1 py-4 font-semibold transition-all {modo === 'registro' ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-gray-700'}"
+          class="flex-1 py-4 px-4 font-bold text-base transition-all relative {modo === 'registro' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'}"
         >
-          Registrarse
+          {#if modo === 'registro'}
+            <span class="relative z-10">Registrarse</span>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-purple-600 rounded-t-lg"></div>
+          {:else}
+            Registrarse
+          {/if}
         </button>
       </div>
 
@@ -169,7 +203,7 @@
             <button
               type="submit"
               disabled={cargando}
-              class="w-full btn btn-primary py-3 text-lg shadow-lg hover:shadow-xl"
+              class="w-full bg-gradient-to-r from-primary to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
             >
               {#if cargando}
                 <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -270,11 +304,11 @@
             <button
               type="submit"
               disabled={cargando}
-              class="w-full btn btn-primary py-3 text-lg shadow-lg hover:shadow-xl"
+              class="w-full bg-gradient-to-r from-primary to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
             >
               {#if cargando}
                 <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                <span>Registrando...</span>
+                <span>Creando cuenta...</span>
               {:else}
                 <UserPlus class="w-5 h-5" />
                 <span>Crear Cuenta</span>
@@ -299,6 +333,21 @@
 <style>
   :global(body) {
     overflow-x: hidden;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
   }
 </style>
 

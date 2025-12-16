@@ -6,7 +6,6 @@
   import TarjetaArticulo from '$lib/components/TarjetaArticulo.svelte';
   import Modal from '$lib/components/Modal.svelte';
   import Navbar from '$lib/components/Navbar.svelte';
-  import Notificaciones from '$lib/components/Notificaciones.svelte';
   import { Plus, Package } from 'lucide-svelte';
 
   let articulos: Articulo[] = [];
@@ -103,7 +102,6 @@
 </svelte:head>
 
 <Navbar />
-<Notificaciones />
 
 <div class="max-w-7xl mx-auto px-4 py-8">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">

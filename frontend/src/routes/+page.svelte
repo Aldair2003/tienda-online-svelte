@@ -4,7 +4,6 @@
   import { ApiService } from '$lib/services/api';
   import TarjetaArticulo from '$lib/components/TarjetaArticulo.svelte';
   import Navbar from '$lib/components/Navbar.svelte';
-  import Notificaciones from '$lib/components/Notificaciones.svelte';
 
   let articulos: Articulo[] = [];
   let cargando = true;
@@ -42,7 +41,6 @@
 </svelte:head>
 
 <Navbar />
-<Notificaciones />
 
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Hero Section -->

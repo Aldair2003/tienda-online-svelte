@@ -11,8 +11,11 @@
   $: usuario = $auth.usuario;
 
   function handleLogout() {
+    notificaciones.limpiar(); // Limpiar notificaciones anteriores
     auth.logout();
-    notificaciones.agregar('success', 'Sesión cerrada correctamente');
+    setTimeout(() => {
+      notificaciones.agregar('success', 'Sesión cerrada correctamente');
+    }, 100);
     goto('/auth');
   }
 </script>

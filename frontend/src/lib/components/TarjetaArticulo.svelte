@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Articulo } from '$lib/types';
+  import { goto } from '$app/navigation';
   import { carrito } from '$lib/stores/carrito';
+  import { auth } from '$lib/stores/auth';
   import { notificaciones } from '$lib/stores/notificaciones';
   import { ShoppingCart, Edit2, Trash2, Package, AlertCircle } from 'lucide-svelte';
 
@@ -9,7 +11,22 @@
   export let onEditar: ((articulo: Articulo) => void) | undefined = undefined;
   export let onEliminar: ((id: string) => void) | undefined = undefined;
 
+  $: usuario = $auth.usuario;
+
   function agregarAlCarrito() {
+    // Verificar si el usuario está autenticado
+    if (!usuario) {
+      notificaciones.agregar('warning', 'Debes iniciar sesión para agregar productos al carrito');
+      goto('/auth');
+      return;
+    }
+
+    // Verificar que sea un cliente
+    if (usuario.rol !== 'cliente') {
+      notificaciones.agregar('warning', 'Solo los clientes pueden agregar productos al carrito');
+      return;
+    }
+
     if (articulo.stock > 0) {
       carrito.agregar(articulo, 1);
       notificaciones.agregar('success', `${articulo.nombre} agregado al carrito`);
