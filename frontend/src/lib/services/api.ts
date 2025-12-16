@@ -1,6 +1,7 @@
 import type { Articulo, Pedido, ApiResponse, Cliente } from '$lib/types';
 
-const API_URL = 'http://localhost:3000/api';
+// Usa variable de entorno si existe, sino usa localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export class ApiService {
   // Artículos
