@@ -63,9 +63,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📦 API disponible en http://localhost:${PORT}/api`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`📦 API disponible en /api`);
+  console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
